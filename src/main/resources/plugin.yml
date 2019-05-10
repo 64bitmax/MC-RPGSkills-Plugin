@@ -1,0 +1,6 @@
+name: RPG Skills
+version: ${project.version}
+main: com.devnorman.rpgskills.RPGSkills
+api-version: 1.13
+authors: [MaxNorman]
+description: RPG Skills offers a variety of role playing skills to Minecraft. These skills can be levelled by performing activities that associate with the skill being trained. Levelling skills offers rewards and unique power-ups.
