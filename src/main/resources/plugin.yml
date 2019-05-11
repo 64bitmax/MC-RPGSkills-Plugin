@@ -1,6 +1,10 @@
-name: RPG Skills
+name: RPGSkills
 version: ${project.version}
 main: com.devnorman.rpgskills.RPGSkills
-api-version: 1.13
+api-version: 1.14
 authors: [MaxNorman]
 description: RPG Skills offers a variety of role playing skills to Minecraft. These skills can be levelled by performing activities that associate with the skill being trained. Levelling skills offers rewards and unique power-ups.
+commands:
+  rpgskills:
+    description: Prints information about the RPG skills plugin
+    usage: Syntax error. Perhaps you meant /<command> PlayerName?
