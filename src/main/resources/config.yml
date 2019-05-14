@@ -1,0 +1,6 @@
+# Database Properties
+host: [INSERT HOST IP]
+database: [INSERT DATABASE]
+username: [INSERT USERNAME]
+password: [INSERT PASSWORD]
+port: [INSERT PORT]

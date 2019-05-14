@@ -1,6 +1,6 @@
 <component name="ArtifactManager">
-  <artifact type="jar" name="RPGSkills:jar">
-    <output-path>$PROJECT_DIR$/out/artifacts/RPGSkills_jar</output-path>
+  <artifact type="jar" name="RPGSkillsFinalFinal:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/RPGSkillsFinalFinal_jar</output-path>
     <root id="archive" name="RPGSkills.jar">
       <element id="module-output" name="RPGSkills" />
     </root>
