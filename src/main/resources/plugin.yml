@@ -7,4 +7,7 @@ description: RPG Skills offers a variety of role playing skills to Minecraft. Th
 commands:
   rpgskills:
     description: Prints information about the RPG skills plugin
-    usage: Syntax error. Perhaps you meant /<command> PlayerName?
+    usage: Syntax error. Perhaps you meant /rpgskills
+  rpglvl:
+    description: Displays all your RPG levels and experience
+    usage: Syntax error. Perhaps you meant /rpglevel

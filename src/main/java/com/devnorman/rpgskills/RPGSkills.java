@@ -1,32 +1,30 @@
 package com.devnorman.rpgskills;
 
 import org.bukkit.ChatColor;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import java.sql.*;
 
 
 public final class RPGSkills extends JavaPlugin {
-    DatabaseConnector dbConnector;
-    FileConfiguration configuration;
-    static Connection con;
+    static DatabaseConnector dbConnector;
 
     @Override
     public void onEnable() {
-        configuration = getConfig();
-        configuration.options().copyDefaults(true);
-        saveDefaultConfig();
+        // Establishes connection the SQL database
+        dbConnector = new DatabaseConnector();
 
-        dbConnector = new DatabaseConnector(configuration);
+        // Console confirmation message
         getServer().getConsoleSender().sendMessage(ChatColor.BLUE + "RPG" + ChatColor.RED + "Skills " + ChatColor.GREEN + "is running");
 
+        // Events
         getServer().getPluginManager().registerEvents(new MiningEvent(), this);
+
+        // Commands
         getCommand("rpgskills").setExecutor(new InfoCommand());
+        getCommand("rpglvl").setExecutor(new LevelCommand());
     }
 
     @Override
     public void onDisable() {
-        getServer().getConsoleSender().sendMessage(ChatColor.RED + "RPGSkills has shut down");
+        getServer().getConsoleSender().sendMessage(ChatColor.BLUE + "RPG" + ChatColor.RED + "Skills: " + ChatColor.DARK_RED + "Shutting down");
     }
 }

@@ -15,7 +15,11 @@ public class DatabaseConnector {
     private String host, database, username, password;
     private int port;
 
-    public DatabaseConnector(FileConfiguration configuration) {
+    public DatabaseConnector() {
+        FileConfiguration configuration = RPGSkills.getPlugin(RPGSkills.class).getConfig();
+        configuration.options().copyDefaults(true);
+        RPGSkills.getPlugin(RPGSkills.class).saveDefaultConfig();
+
         host = configuration.getString("host");
         database = configuration.getString("database");
         username =  configuration.getString("username");
@@ -31,7 +35,7 @@ public class DatabaseConnector {
                 setConnection(DriverManager.getConnection("jdbc:mysql://" + this.host + ":" + this.port + "/" + this.database, this.username, this.password));
                 Bukkit.getConsoleSender().sendMessage(ChatColor.BLUE + "RPG" + ChatColor.RED + "Skills: " + ChatColor.GREEN + "MYSQL Connected");
 
-                PreparedStatement statement = connection.prepareStatement("CREATE TABLE rpgskills_player_data (" +
+                PreparedStatement creationStatement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS rpgskills_player_data (" +
                         "ID int(5) UNSIGNED NOT NULL AUTO_INCREMENT," +
                         "player_name varchar(30) NOT NULL," +
                         "mining_exp int(9) NOT NULL," +
@@ -40,11 +44,10 @@ public class DatabaseConnector {
                         "farming_exp int(9) NOT NULL," +
                         "PRIMARY KEY (id));");
 
-                statement.execute();
+                creationStatement.execute();
             } catch (ClassNotFoundException | SQLException e) {
                 e.printStackTrace();
             }
-
         }
     }
 
