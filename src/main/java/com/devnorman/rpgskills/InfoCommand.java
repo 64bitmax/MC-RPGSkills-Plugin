@@ -12,9 +12,10 @@ public class InfoCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if(sender instanceof Player) {
             Player player = (Player) sender;
-            player.sendMessage(ChatColor.WHITE + "==============================");
-            player.sendMessage("========= " + ChatColor.BLUE + "RPG" + ChatColor.RED + "Skills" + ChatColor.WHITE + "Info =========");
-            player.sendMessage(ChatColor.WHITE + "==============================");
+            player.sendMessage("=========[ " + ChatColor.BLUE + "RPG" + ChatColor.RED + "Skills" + ChatColor.WHITE + "Info ]=========");
+
+            player.sendMessage("/rpgskills");
+            player.sendMessage("/rpglvl");
         }
 
         return true;

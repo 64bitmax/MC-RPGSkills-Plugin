@@ -16,7 +16,8 @@ public final class RPGSkills extends JavaPlugin {
         getServer().getConsoleSender().sendMessage(ChatColor.BLUE + "RPG" + ChatColor.RED + "Skills " + ChatColor.GREEN + "is running");
 
         // Events
-        getServer().getPluginManager().registerEvents(new MiningEvent(), this);
+        getServer().getPluginManager().registerEvents(new BlockBreakListener(), this);
+        getServer().getPluginManager().registerEvents(new EntityKillListener(), this);
 
         // Commands
         getCommand("rpgskills").setExecutor(new InfoCommand());

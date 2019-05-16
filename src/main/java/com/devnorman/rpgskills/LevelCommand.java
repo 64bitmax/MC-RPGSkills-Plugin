@@ -24,26 +24,23 @@ public class LevelCommand implements CommandExecutor {
                 ResultSet result = statement.executeQuery("SELECT * FROM rpgskills_player_data WHERE player_name='" + player.getName() + "'");
 
                 if(!result.next()) {
-                    System.out.println("GOT HERE");
                     statement.execute("INSERT INTO rpgskills_player_data(player_name) VALUES('" + player.getName() + "')");
                 }
 
                 ResultSet playerData = statement.executeQuery("SELECT mining_level, mining_exp, mining_percentage," +
                         "woodcutting_level, woodcutting_exp, woodcutting_percentage," +
                         "farming_level, farming_exp, farming_percentage," +
-                        "endurance_level, endurance_exp, endurance_percentage FROM rpgskills_player_data WHERE player_name='" + player.getName() + "'");
+                        "combat_level, combat_exp, combat_percentage FROM rpgskills_player_data WHERE player_name='" + player.getName() + "'");
 
                 playerData.next();
 
-                int miningLevelUpExp = (int) (100 * Math.pow((playerData.getInt("mining_level") + 1), 1.5));
-                int wcLevelUpExp = (int) (100 * Math.pow((playerData.getInt("woodcutting_level") + 1), 1.5));
-                int farmingLevelUpExp = (int) (100 * Math.pow((playerData.getInt("farming_level") + 1), 1.5));
-                int enduranceLevelUpExp = (int) (100 * Math.pow((playerData.getInt("endurance_level") + 1), 1.5));
+                int miningLevelUpExp = (int) (100 * Math.pow((playerData.getInt("mining_level") + 1), 1.8));
+                int wcLevelUpExp = (int) (80 * Math.pow((playerData.getInt("woodcutting_level") + 1), 1.5));
+                int farmingLevelUpExp = (int)(150 * Math.pow((playerData.getInt("farming_level") + 1), 1.7));
+                int combatLevelUpExp = (int) (200 * Math.pow((playerData.getInt("combat_level") + 1), 1.9));
 
-                player.sendMessage(ChatColor.WHITE + "==============================");
-                player.sendMessage("========= " + ChatColor.BLUE + "RPG" + ChatColor.RED + "Skills" + ChatColor.YELLOW + "Info" + ChatColor.WHITE + " =========");
-                player.sendMessage(ChatColor.WHITE + "==============================");
-                player.sendMessage(" ");
+
+                player.sendMessage("=========[ " + ChatColor.BLUE + "RPG" + ChatColor.RED + "Skills" + ChatColor.YELLOW + "Levels" + ChatColor.WHITE + " ]=========");
                 player.sendMessage(ChatColor.WHITE + "<" + ChatColor.YELLOW + "Mining" + ChatColor.WHITE + ">");
                 player.sendMessage(ChatColor.WHITE + "Mining Level: " + ChatColor.YELLOW + playerData.getInt("mining_level"));
                 player.sendMessage(ChatColor.WHITE + "Mining Exp: " + ChatColor.YELLOW + playerData.getInt("mining_exp") + "/" + miningLevelUpExp);
@@ -56,9 +53,9 @@ public class LevelCommand implements CommandExecutor {
                 player.sendMessage(ChatColor.WHITE + "Farming Level: " + ChatColor.YELLOW + playerData.getInt("farming_level"));
                 player.sendMessage(ChatColor.WHITE + "Farming Exp: " + ChatColor.YELLOW + playerData.getInt("farming_exp") + "/" + farmingLevelUpExp);
                 player.sendMessage(" ");
-                player.sendMessage(ChatColor.WHITE + "<" + ChatColor.YELLOW + "Endurance" + ChatColor.WHITE + ">");
-                player.sendMessage(ChatColor.WHITE + "Endurance Level: " + ChatColor.YELLOW + playerData.getInt("endurance_level"));
-                player.sendMessage(ChatColor.WHITE + "Endurance Exp: " + ChatColor.YELLOW + playerData.getInt("endurance_exp") + "/" + enduranceLevelUpExp);
+                player.sendMessage(ChatColor.WHITE + "<" + ChatColor.YELLOW + "Combat" + ChatColor.WHITE + ">");
+                player.sendMessage(ChatColor.WHITE + "Combat Level: " + ChatColor.YELLOW + playerData.getInt("combat_level"));
+                player.sendMessage(ChatColor.WHITE + "Combatt Exp: " + ChatColor.YELLOW + playerData.getInt("combat_exp") + "/" + combatLevelUpExp);
             } catch (SQLException e) {
                 e.printStackTrace();
             }
