@@ -11,3 +11,6 @@ commands:
   rpglvl:
     description: Displays all your RPG levels and experience
     usage: Syntax error. Perhaps you meant /rpglevel
+  rpgleaderboard:
+    description: Shows the leaderboard of players in different skills
+    usage: Syntax error. Perhaps you meant /rpgleaderboard [skillName]

@@ -8,6 +8,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
 
+import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -15,7 +16,7 @@ import java.sql.Statement;
 public class EntityKillListener implements Listener {
 
     @EventHandler
-    public void damageTakeEvent(EntityDeathEvent e) {
+    public void damageTakeEvent(EntityDeathEvent e) throws IOException {
         Player player = e.getEntity().getKiller();
 
         if(player != null) {
@@ -45,7 +46,7 @@ public class EntityKillListener implements Listener {
                     combat_experience = 12;
                     break;
                 case ZOMBIE:
-                    combat_experience = 15;
+                    combat_experience = 12;
                     break;
                 case ZOMBIE_VILLAGER:
                     combat_experience = 15;
@@ -57,16 +58,16 @@ public class EntityKillListener implements Listener {
                     combat_experience = 15;
                     break;
                 case WITCH:
-                    combat_experience = 30;
+                    combat_experience = 50;
                     break;
                 case EVOKER:
-                    combat_experience = 15;
+                    combat_experience = 25;
                     break;
                 case VINDICATOR:
-                    combat_experience = 15;
+                    combat_experience = 25;
                     break;
                 case PILLAGER:
-                    combat_experience = 15;
+                    combat_experience = 25;
                     break;
                 case RAVAGER:
                     combat_experience = 100;
@@ -114,16 +115,16 @@ public class EntityKillListener implements Listener {
                     combat_experience = 5;
                     break;
                 case SPIDER:
-                    combat_experience = 5;
+                    combat_experience = 10;
                     break;
                 case CAVE_SPIDER:
-                    combat_experience = 8;
+                    combat_experience = 12;
                     break;
                 case POLAR_BEAR:
                     combat_experience = 10;
                     break;
                 case LLAMA:
-                    combat_experience = 20;
+                    combat_experience = 15;
                     break;
                 case IRON_GOLEM:
                     combat_experience = 100;
@@ -135,13 +136,13 @@ public class EntityKillListener implements Listener {
                     combat_experience = 1;
                     break;
                 case COW:
-                    combat_experience = 4;
+                    combat_experience = 3;
                     break;
                 case MUSHROOM_COW:
                     combat_experience = 10;
                     break;
                 case PIG:
-                    combat_experience = 4;
+                    combat_experience = 3;
                     break;
                 case SHEEP:
                     combat_experience = 2;
@@ -159,10 +160,10 @@ public class EntityKillListener implements Listener {
                     combat_experience = 2;
                     break;
                 case OCELOT:
-                    combat_experience = 4;
+                    combat_experience = 3;
                     break;
                 case CAT:
-                    combat_experience = 4;
+                    combat_experience = 3;
                     break;
                 case HORSE:
                     combat_experience = 15;
@@ -202,7 +203,7 @@ public class EntityKillListener implements Listener {
                     break;
             }
 
-            Statement statement = null;
+            Statement statement;
             try {
                 statement = RPGSkills.dbConnector.getConnection().createStatement();
 

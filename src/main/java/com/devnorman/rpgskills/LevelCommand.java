@@ -6,6 +6,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -55,7 +56,7 @@ public class LevelCommand implements CommandExecutor {
                 player.sendMessage(" ");
                 player.sendMessage(ChatColor.WHITE + "<" + ChatColor.YELLOW + "Combat" + ChatColor.WHITE + ">");
                 player.sendMessage(ChatColor.WHITE + "Combat Level: " + ChatColor.YELLOW + playerData.getInt("combat_level"));
-                player.sendMessage(ChatColor.WHITE + "Combatt Exp: " + ChatColor.YELLOW + playerData.getInt("combat_exp") + "/" + combatLevelUpExp);
+                player.sendMessage(ChatColor.WHITE + "Combat Exp: " + ChatColor.YELLOW + playerData.getInt("combat_exp") + "/" + combatLevelUpExp);
             } catch (SQLException e) {
                 e.printStackTrace();
             }

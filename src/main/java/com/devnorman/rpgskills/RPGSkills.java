@@ -22,6 +22,7 @@ public final class RPGSkills extends JavaPlugin {
         // Commands
         getCommand("rpgskills").setExecutor(new InfoCommand());
         getCommand("rpglvl").setExecutor(new LevelCommand());
+        getCommand("rpgleaderboard").setExecutor(new LeaderboardCommand());
     }
 
     @Override

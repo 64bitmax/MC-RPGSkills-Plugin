@@ -9,6 +9,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 
+import java.io.IOException;
+import java.net.SocketException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -18,10 +20,8 @@ public class BlockBreakListener implements Listener {
     Block block;
     Material materialInteraction;
 
-
-
     @EventHandler
-    public void blockBreakEvent(BlockBreakEvent e) {
+    public void blockBreakEvent(BlockBreakEvent e) throws IOException, SQLException {
         player = e.getPlayer();
         block = e.getBlock();
         materialInteraction = player.getInventory().getItemInMainHand().getType();
@@ -31,7 +31,7 @@ public class BlockBreakListener implements Listener {
         configureFarming();
     }
 
-    private void configureWoodcutting() {
+    private void configureWoodcutting() throws IOException, SQLException {
         int woodcuttingExperience = 0;
 
         if(block.getType().equals(Material.ACACIA_LOG) || block.getType().equals(Material.BIRCH_LOG) ||
@@ -40,43 +40,39 @@ public class BlockBreakListener implements Listener {
             woodcuttingExperience = 10;
         }
 
-        Statement statement = null;
-        try {
-            statement = RPGSkills.dbConnector.getConnection().createStatement();
+        Statement statement;
+        statement = RPGSkills.dbConnector.getConnection().createStatement();
 
-            statement.execute("INSERT INTO rpgskills_player_data(player_name, woodcutting_exp) VALUES('" +
-                    player.getName() + "'," + woodcuttingExperience + ") ON DUPLICATE KEY UPDATE " +
-                    "woodcutting_exp=woodcutting_exp+" + woodcuttingExperience);
+        statement.execute("INSERT INTO rpgskills_player_data(player_name, woodcutting_exp) VALUES('" +
+                player.getName() + "'," + woodcuttingExperience + ") ON DUPLICATE KEY UPDATE " +
+                "woodcutting_exp=woodcutting_exp+" + woodcuttingExperience);
 
-            ResultSet playerData = statement.executeQuery("SELECT woodcutting_exp, woodcutting_level FROM rpgskills_player_data WHERE player_name='" + player.getName() + "'");
+        ResultSet playerData = statement.executeQuery("SELECT woodcutting_exp, woodcutting_level FROM rpgskills_player_data WHERE player_name='" + player.getName() + "'");
 
-            playerData.next();
+        playerData.next();
 
-            int currentWoodcuttingExp = playerData.getInt("woodcutting_exp");
-            int currentWoodcuttingLevel = playerData.getInt("woodcutting_level");
+        int currentWoodcuttingExp = playerData.getInt("woodcutting_exp");
+        int currentWoodcuttingLevel = playerData.getInt("woodcutting_level");
 
-            double levelUpExp = 80 * Math.pow((currentWoodcuttingLevel + 1), 1.5);
+        double levelUpExp = 80 * Math.pow((currentWoodcuttingLevel + 1), 1.5);
 
-            if(currentWoodcuttingExp >= levelUpExp) {
-                currentWoodcuttingLevel++;
-                player.sendMessage(ChatColor.BLUE + "RPG" + ChatColor.RED + "Skills: " + ChatColor.YELLOW
-                        + "Your woodcutting level has " + ChatColor.GREEN + "LEVELED UP" + ChatColor.YELLOW + " to "
-                        + ChatColor.GREEN + currentWoodcuttingLevel + ChatColor.YELLOW + ".");
-                currentWoodcuttingExp = (int)(currentWoodcuttingExp - levelUpExp);
-            }
-
-            int percentageOfCurrentLevel = (int)((currentWoodcuttingExp / levelUpExp) * 100);
-
-            statement.execute("UPDATE rpgskills_player_data SET woodcutting_exp=" + currentWoodcuttingExp + ", " +
-                    "woodcutting_level=" + currentWoodcuttingLevel + ", woodcutting_percentage=" + percentageOfCurrentLevel + " " +
-                    "WHERE player_name='" + player.getName() + "'");
-
-        } catch (SQLException e) {
-            e.printStackTrace();
+        if(currentWoodcuttingExp >= levelUpExp) {
+            currentWoodcuttingLevel++;
+            player.sendMessage(ChatColor.BLUE + "RPG" + ChatColor.RED + "Skills: " + ChatColor.YELLOW
+                    + "Your woodcutting level has " + ChatColor.GREEN + "LEVELED UP" + ChatColor.YELLOW + " to "
+                    + ChatColor.GREEN + currentWoodcuttingLevel + ChatColor.YELLOW + ".");
+            currentWoodcuttingExp = (int)(currentWoodcuttingExp - levelUpExp);
         }
+
+        int percentageOfCurrentLevel = (int)((currentWoodcuttingExp / levelUpExp) * 100);
+
+        statement.execute("UPDATE rpgskills_player_data SET woodcutting_exp=" + currentWoodcuttingExp + ", " +
+                "woodcutting_level=" + currentWoodcuttingLevel + ", woodcutting_percentage=" + percentageOfCurrentLevel + " " +
+                "WHERE player_name='" + player.getName() + "'");
+
     }
 
-    private void configureFarming() {
+    private void configureFarming() throws IOException, SQLException {
         int farmingExperience = 0;
 
         byte blockData = block.getData();
@@ -86,7 +82,8 @@ public class BlockBreakListener implements Listener {
             farmingExperience = 10;
         } else if(block.getType().equals(Material.BEETROOTS) || block.getType().equals(Material.CARROTS) || block.getType().equals(Material.POTATOES) && isFullyGrown) {
             farmingExperience = 20;
-        } else if(block.getType().equals(Material.MELON) || block.getType().equals(Material.PUMPKIN) && isFullyGrown) {
+        } else if(block.getType().equals(Material.MELON) || block.getType().equals(Material.LEGACY_PUMPKIN) ||
+                block.getType().equals(Material.PUMPKIN) && isFullyGrown) {
             farmingExperience = 75;
         } else if(block.getType().equals(Material.COCOA) && isFullyGrown) {
             farmingExperience = 100;
@@ -95,7 +92,7 @@ public class BlockBreakListener implements Listener {
             farmingExperience = 1;
         }
 
-        Statement statement = null;
+        Statement statement;
         try {
             statement = RPGSkills.dbConnector.getConnection().createStatement();
 
@@ -130,7 +127,7 @@ public class BlockBreakListener implements Listener {
         }
     }
 
-    private void configureMining() {
+    private void configureMining() throws IOException, SQLException {
         int miningExperience = 0;
         boolean mined = true;
 
@@ -158,7 +155,20 @@ public class BlockBreakListener implements Listener {
                 materialInteraction.equals(Material.GOLDEN_PICKAXE) || materialInteraction.equals(Material.STONE_PICKAXE) ||
                 materialInteraction.equals(Material.IRON_PICKAXE) || materialInteraction.equals(Material.DIAMOND_PICKAXE))) {
             miningExperience = 10;
-        } else {
+        } else if(block.getType().equals(Material.STONE) || block.getType().equals(Material.ANDESITE) ||
+                block.getType().equals(Material.DIORITE) || block.getType().equals(Material.GRANITE) ||
+                block.getType().equals(Material.COBBLESTONE) || block.getType().equals(Material.MOSSY_COBBLESTONE) ||
+                block.getType().equals(Material.SANDSTONE) || block.getType().equals(Material.RED_SANDSTONE) ||
+                block.getType().equals(Material.COBBLESTONE) || block.getType().equals(Material.MOSSY_COBBLESTONE) ||
+                block.getType().equals(Material.QUARTZ_BLOCK) || block.getType().equals(Material.PRISMARINE) ||
+                block.getType().equals(Material.DARK_PRISMARINE) || block.getType().equals(Material.BRICK) ||
+                block.getType().equals(Material.STONE_BRICKS) || block.getType().equals(Material.MOSSY_STONE_BRICKS) ||
+                block.getType().equals(Material.CHISELED_STONE_BRICKS) || block.getType().equals(Material.NETHER_BRICK) ||
+                block.getType().equals(Material.COBBLESTONE) || block.getType().equals(Material.MOSSY_COBBLESTONE)){
+            miningExperience = 1;
+            // TODO: Batch processing this and make this a command to see experience rates
+        }
+        else {
             mined = false;
         }
 
