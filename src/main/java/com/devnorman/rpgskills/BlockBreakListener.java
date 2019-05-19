@@ -1,6 +1,7 @@
 package com.devnorman.rpgskills;
 
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
@@ -21,17 +22,19 @@ public class BlockBreakListener implements Listener {
     Material materialInteraction;
 
     @EventHandler
-    public void blockBreakEvent(BlockBreakEvent e) throws IOException, SQLException {
+    public void blockBreakEvent(BlockBreakEvent e) {
         player = e.getPlayer();
-        block = e.getBlock();
-        materialInteraction = player.getInventory().getItemInMainHand().getType();
 
-        configureMining();
-        configureWoodcutting();
-        configureFarming();
+        if(player.getGameMode() != GameMode.CREATIVE) {
+            block = e.getBlock();
+            materialInteraction = player.getInventory().getItemInMainHand().getType();
+            configureMining();
+            configureWoodcutting();
+            configureFarming();
+        }
     }
 
-    private void configureWoodcutting() throws IOException, SQLException {
+    private void configureWoodcutting() {
         int woodcuttingExperience = 0;
 
         if(block.getType().equals(Material.ACACIA_LOG) || block.getType().equals(Material.BIRCH_LOG) ||
@@ -41,38 +44,50 @@ public class BlockBreakListener implements Listener {
         }
 
         Statement statement;
-        statement = RPGSkills.dbConnector.getConnection().createStatement();
+        try {
+            statement = RPGSkills.dbConnector.getConnection().createStatement();
 
-        statement.execute("INSERT INTO rpgskills_player_data(player_name, woodcutting_exp) VALUES('" +
-                player.getName() + "'," + woodcuttingExperience + ") ON DUPLICATE KEY UPDATE " +
-                "woodcutting_exp=woodcutting_exp+" + woodcuttingExperience);
+            statement.execute("INSERT INTO rpgskills_player_data(player_name, woodcutting_exp) VALUES('" +
+                    player.getName() + "'," + woodcuttingExperience + ") ON DUPLICATE KEY UPDATE " +
+                    "woodcutting_exp=woodcutting_exp+" + woodcuttingExperience);
 
-        ResultSet playerData = statement.executeQuery("SELECT woodcutting_exp, woodcutting_level FROM rpgskills_player_data WHERE player_name='" + player.getName() + "'");
+            statement.close();
 
-        playerData.next();
+            statement = RPGSkills.dbConnector.getConnection().createStatement();
+            ResultSet playerData = statement.executeQuery("SELECT woodcutting_exp, woodcutting_level FROM rpgskills_player_data WHERE player_name='" + player.getName() + "'");
 
-        int currentWoodcuttingExp = playerData.getInt("woodcutting_exp");
-        int currentWoodcuttingLevel = playerData.getInt("woodcutting_level");
+            playerData.next();
 
-        double levelUpExp = 80 * Math.pow((currentWoodcuttingLevel + 1), 1.5);
+            int currentWoodcuttingExp = playerData.getInt("woodcutting_exp");
+            int currentWoodcuttingLevel = playerData.getInt("woodcutting_level");
 
-        if(currentWoodcuttingExp >= levelUpExp) {
-            currentWoodcuttingLevel++;
-            player.sendMessage(ChatColor.BLUE + "RPG" + ChatColor.RED + "Skills: " + ChatColor.YELLOW
-                    + "Your woodcutting level has " + ChatColor.GREEN + "LEVELED UP" + ChatColor.YELLOW + " to "
-                    + ChatColor.GREEN + currentWoodcuttingLevel + ChatColor.YELLOW + ".");
-            currentWoodcuttingExp = (int)(currentWoodcuttingExp - levelUpExp);
+            double levelUpExp = 80 * Math.pow((currentWoodcuttingLevel + 1), 1.5);
+
+            if(currentWoodcuttingExp >= levelUpExp) {
+                currentWoodcuttingLevel++;
+                player.sendMessage(ChatColor.BLUE + "RPG" + ChatColor.RED + "Skills: " + ChatColor.YELLOW
+                        + "Your woodcutting level has " + ChatColor.GREEN + "LEVELED UP" + ChatColor.YELLOW + " to "
+                        + ChatColor.GREEN + currentWoodcuttingLevel + ChatColor.YELLOW + ".");
+                currentWoodcuttingExp = (int)(currentWoodcuttingExp - levelUpExp);
+            }
+
+            int percentageOfCurrentLevel = (int)((currentWoodcuttingExp / levelUpExp) * 100);
+
+            statement.close();
+
+            statement = RPGSkills.dbConnector.getConnection().createStatement();
+            statement.execute("UPDATE rpgskills_player_data SET woodcutting_exp=" + currentWoodcuttingExp + ", " +
+                    "woodcutting_level=" + currentWoodcuttingLevel + ", woodcutting_percentage=" + percentageOfCurrentLevel + " " +
+                    "WHERE player_name='" + player.getName() + "'");
+
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-
-        int percentageOfCurrentLevel = (int)((currentWoodcuttingExp / levelUpExp) * 100);
-
-        statement.execute("UPDATE rpgskills_player_data SET woodcutting_exp=" + currentWoodcuttingExp + ", " +
-                "woodcutting_level=" + currentWoodcuttingLevel + ", woodcutting_percentage=" + percentageOfCurrentLevel + " " +
-                "WHERE player_name='" + player.getName() + "'");
 
     }
 
-    private void configureFarming() throws IOException, SQLException {
+    private void configureFarming() {
         int farmingExperience = 0;
 
         byte blockData = block.getData();
@@ -100,6 +115,9 @@ public class BlockBreakListener implements Listener {
                     player.getName() + "'," + farmingExperience + ") ON DUPLICATE KEY UPDATE " +
                     "farming_exp=farming_exp+" + farmingExperience);
 
+            statement.close();
+
+            statement = RPGSkills.dbConnector.getConnection().createStatement();
             ResultSet playerData = statement.executeQuery("SELECT farming_exp, farming_level FROM rpgskills_player_data WHERE player_name='" + player.getName() + "'");
 
             playerData.next();
@@ -119,15 +137,20 @@ public class BlockBreakListener implements Listener {
 
             int percentageOfCurrentLevel = (int)((currentFarmingExp / levelUpExp) * 100);
 
+            statement.close();
+
+            statement = RPGSkills.dbConnector.getConnection().createStatement();
             statement.execute("UPDATE rpgskills_player_data SET farming_exp=" + currentFarmingExp + ", " +
                     "farming_level=" + currentFarmingLevel + ", farming_percentage=" + percentageOfCurrentLevel + " " +
                     "WHERE player_name='" + player.getName() + "'");
+
+            statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    private void configureMining() throws IOException, SQLException {
+    private void configureMining() {
         int miningExperience = 0;
         boolean mined = true;
 
@@ -179,6 +202,9 @@ public class BlockBreakListener implements Listener {
                         player.getName() + "'," + miningExperience + ") ON DUPLICATE KEY UPDATE " +
                         "mining_exp=mining_exp+" + miningExperience);
 
+                statement.close();
+
+                statement = RPGSkills.dbConnector.getConnection().createStatement();
                 ResultSet playerData = statement.executeQuery("SELECT mining_exp, mining_level FROM rpgskills_player_data WHERE player_name='" + player.getName() + "'");
 
                 playerData.next();
@@ -200,9 +226,14 @@ public class BlockBreakListener implements Listener {
 
                 int percentageOfCurrentLevel = (int)((currentMiningExp / levelUpExp) * 100);
 
+                statement.close();
+
+                statement = RPGSkills.dbConnector.getConnection().createStatement();
                 statement.execute("UPDATE rpgskills_player_data SET mining_exp=" + currentMiningExp + ", " +
                         "mining_level=" + currentMiningLevel + ", mining_percentage=" + percentageOfCurrentLevel + " " +
                         "WHERE player_name='" + player.getName() + "'");
+
+                statement.close();
             } catch (SQLException e1) {
                 e1.printStackTrace();
             }

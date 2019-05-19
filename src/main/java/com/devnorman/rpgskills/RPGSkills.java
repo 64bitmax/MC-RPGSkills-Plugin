@@ -3,6 +3,8 @@ package com.devnorman.rpgskills;
 import org.bukkit.ChatColor;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.sql.SQLException;
+
 
 public final class RPGSkills extends JavaPlugin {
     static DatabaseConnector dbConnector;
@@ -28,5 +30,10 @@ public final class RPGSkills extends JavaPlugin {
     @Override
     public void onDisable() {
         getServer().getConsoleSender().sendMessage(ChatColor.BLUE + "RPG" + ChatColor.RED + "Skills: " + ChatColor.DARK_RED + "Shutting down");
+        try {
+            dbConnector.getConnection().close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }

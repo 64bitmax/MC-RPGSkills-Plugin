@@ -1,6 +1,7 @@
 package com.devnorman.rpgskills;
 
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -16,10 +17,10 @@ import java.sql.Statement;
 public class EntityKillListener implements Listener {
 
     @EventHandler
-    public void damageTakeEvent(EntityDeathEvent e) throws IOException {
+    public void damageTakeEvent(EntityDeathEvent e) {
         Player player = e.getEntity().getKiller();
 
-        if(player != null) {
+        if(player != null && player.getGameMode() != GameMode.CREATIVE) {
             EntityType deadEntity = e.getEntity().getType();
             int combat_experience = 0;
 
@@ -211,6 +212,9 @@ public class EntityKillListener implements Listener {
                         player.getName() + "'," + combat_experience + ") ON DUPLICATE KEY UPDATE " +
                         "combat_exp=combat_exp+" + combat_experience);
 
+                statement.close();
+
+                statement = RPGSkills.dbConnector.getConnection().createStatement();
                 ResultSet playerData = statement.executeQuery("SELECT combat_exp, combat_level FROM rpgskills_player_data WHERE player_name='" + player.getName() + "'");
 
                 playerData.next();
@@ -235,9 +239,15 @@ public class EntityKillListener implements Listener {
 
                 int percentageOfCurrentLevel = (int)((currentCombatExp / levelUpExp) * 100);
 
+                statement.close();
+
+                statement = RPGSkills.dbConnector.getConnection().createStatement();
+
                 statement.execute("UPDATE rpgskills_player_data SET combat_exp=" + currentCombatExp + ", " +
                         "combat_level=" + currentCombatLevel + ", combat_percentage=" + percentageOfCurrentLevel + " " +
                         "WHERE player_name='" + player.getName() + "'");
+
+                statement.close();
 
             } catch (SQLException ex) {
                 ex.printStackTrace();

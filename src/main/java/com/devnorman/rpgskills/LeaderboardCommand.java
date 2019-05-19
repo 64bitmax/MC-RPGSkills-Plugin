@@ -18,6 +18,7 @@ public class LeaderboardCommand implements CommandExecutor {
         if(strings.length == 0) {
             return false;
         }
+
         Statement statement;
         try {
             statement = RPGSkills.dbConnector.getConnection().createStatement();
@@ -49,8 +50,10 @@ public class LeaderboardCommand implements CommandExecutor {
                     }
                     count++;
                 }
+                statement.close();
                 return true;
             } else if(strings[0].toLowerCase().equals("woodcutting") || strings[0].toLowerCase().equals("wc")) {
+                statement = RPGSkills.dbConnector.getConnection().createStatement();
                 data = statement.executeQuery("SELECT player_name, woodcutting_level FROM rpgskills_player_data ORDER BY woodcutting_level DESC");
                 player.sendMessage("=========[ " + ChatColor.BLUE + "RPG" + ChatColor.RED + "Skills" + ChatColor.GOLD + "Woodcutting" + ChatColor.YELLOW + "Leaderboard ]=========");
 
@@ -76,9 +79,12 @@ public class LeaderboardCommand implements CommandExecutor {
                     }
                     count++;
                 }
+                statement.close();
                 return true;
             } else if(strings[0].toLowerCase().equals("farming") || strings[0].toLowerCase().equals("farm")) {
+                statement = RPGSkills.dbConnector.getConnection().createStatement();
                 data = statement.executeQuery("SELECT player_name, farming_level FROM rpgskills_player_data ORDER BY farming_level DESC");
+
                 player.sendMessage("=========[ " + ChatColor.BLUE + "RPG" + ChatColor.RED + "Skills" + ChatColor.GOLD + "Farming" + ChatColor.YELLOW + "Leaderboard ]=========");
                 int count = 1;
 
@@ -102,9 +108,12 @@ public class LeaderboardCommand implements CommandExecutor {
                     }
                     count++;
                 }
+                statement.close();
                 return true;
             } else if(strings[0].toLowerCase().equals("combat") || strings[0].toLowerCase().equals("cbt")) {
+                statement = RPGSkills.dbConnector.getConnection().createStatement();
                 data = statement.executeQuery("SELECT player_name, combat_level FROM rpgskills_player_data ORDER BY combat_level DESC");
+
                 player.sendMessage("=========[ " + ChatColor.BLUE + "RPG" + ChatColor.RED + "Skills" + ChatColor.GOLD + "Combat" + ChatColor.YELLOW + "Leaderboard ]=========");
 
                 int count = 1;
@@ -129,12 +138,13 @@ public class LeaderboardCommand implements CommandExecutor {
                     }
                     count++;
                 }
+
+                statement.close();
                 return true;
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
 
         return false;
     }

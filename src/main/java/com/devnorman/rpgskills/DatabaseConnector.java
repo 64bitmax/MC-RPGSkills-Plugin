@@ -45,6 +45,7 @@ public class DatabaseConnector {
                         "PRIMARY KEY (id));");
 
                 creationStatement.execute();
+                creationStatement.close();
             } catch (ClassNotFoundException | SQLException e) {
                 e.printStackTrace();
             }
